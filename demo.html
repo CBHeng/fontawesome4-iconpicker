@@ -7,26 +7,46 @@
     <title>Document</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="scss/Awesome-icon-picker.scss">
+    <link rel="stylesheet" href="dist/Awesome4-iconpicker.css">
 </head>
 <body>
         <div class="container">
             <h3>Iconpicker</h3>
             <div class="row">
-                <div class="col-sm-12 col-lg-6"></div>
-                <div class="col-sm-12 col-lg-6">
-                    <input type="text" class="icon">
+                <div class="col-sm-12 col-lg-3">
+                    <h3>Base: </h3>
+                </div>
+                <div class="col-sm-12 col-lg-9">
+                    <div class="input-group">
+                        <input type="text" class="form-control icon" aria-label="Text input with dropdown button">
+                    </div>
+                </div>
+                <div class="col-sm-12 col-lg-3">
+                
+                </div>
+                <div class="col-sm-12 col-lg-9">
+                    <div class="input-group"></div>
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-secondary">Action</button>
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                                <div role="separator" class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Separated link</a>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-6 col-sm-4">.col-6 .col-sm-4</div>
-                <div class="col-6 col-sm-4">.col-6 .col-sm-4</div>
-                <div class="col-6 col-sm-4">.col-6 .col-sm-4</div>
-            </div>
-
         </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="js/Awesome4-icon-picker.js"></script>
+    <script src="dist/awesome4-iconpicker.js"></script>
     <script>
     $(window).ready(function(){
         $('.icon').iconpicker({ 'icon':'fontawesome' });
