@@ -20,7 +20,17 @@
                     '<div class="iconpicker-selecter">' +
                         '<i class="fa fa-angle-down"></i>' +
                     '</div>' +
-                    '<div class="iconpicker-list">' +
+                    '<div class="iconpicker-content">' +
+                        '<div class="iconpicker-search">'+
+                            '<div class="iconpicker-search-click">'+
+                                '<i class="fa fa-search"></i>'+
+                            '</div>'+
+                            '<div class="iconpicker-search-click-display">'+
+                                '<input type="text" class="iconpicker-search-input">'+
+                            '</div>'+
+                        '</div>'+
+                        '<div class="iconpicker-list">'+
+                        '</div>'+
                     '</div>'+
                 '</div>'
             );
@@ -28,22 +38,27 @@
         'iconPickerIcon': function(value){
             return (
                 '<div class="iconpicker-list-icon" data-iconName="'+value+'">'+
-                    '<i class="fa fa-' + value +'"></i>'+
+                    '<div class="iconpicker-list-icon-i">'+
+                        '<i class="fa fa-' + value +'"></i>'+
+                    '</div>'+
+                    '<div class="iconpicker-list-icon-word">'+
+                         value+
+                    '</div>'+
                 '</div>'
             );
         },
-        'icon': function(icon,value){
-            return '<i class="'+icon.iconClass+' '+icon.iconClassFix+value+'"></i>';
+        'icon': function(value){
+            return '<i class="fa fa-'+value+'"></i>';
         }
     };
     // ==============================
     // Picker Class 
     // ==============================
-    var Iconpicker = function (primitive,){
-        this.primitive = primitive;
-        this.element
+    var Iconpicker = function (element){
+        this.element = element;
+        this.outputType = 'html';
 
-        var $this = element;
+        var $this = this.element    ;
         
         //1.add HTMLtag
         $this.before( HTMLTag.iconPicker() );
@@ -66,7 +81,7 @@
     // Picker Static Fucntion
     // ==============================
     Iconpicker.prototype.search = function(searchValue){
-        return this.icon.icons.filter(function(value){
+        return AwesomeIcon.icons.filter(function(value){
             if( value.indexOf(searchValue) == -1){
                 return false;
             }
@@ -76,6 +91,13 @@
 
     Iconpicker.prototype.select = function (searchValue) {
         return this.element
+    };
+    Iconpicker.prototype.getIconValue = function(value) {
+        if(this.outputType !== 'html'){
+            return value;
+        }
+
+        return HTMLTag.icon(value);
     };
     // ==============================
     // Main iconpicker
@@ -93,40 +115,57 @@
 
             $(this).addClass('is-icon-pciker');
             //----------------------------------------
-            /*Iconpicker Bind Event (keyup) function */
+            /*Iconpicker search keyponel Icons  */
             //----------------------------------------
-            /*$(this).next('.icon-picker').on('keyup','.icon-picker-search-input',function(e){
+            $(this).prev('.iconpicker').on('keyup','.iconpicker-search-input',function(e){
                 e.stopPropagation();
-                var picker = $(this).parents('.icon-picker');
-                var keyVal = $(this).val();
+                var picker = $thisIconpicker.element.prev('.iconpicker');
+                var inputVal = $(this).val();
 
-                picker.find('.icon-picker-content').empty();
+                picker.find('.iconpicker-list').empty();
 
-                $thisIconpicker.search( keyVal ).map(function(value,index){
-                    picker.find('.icon-picker-content')
-                         .append( HTMLTag.iconPickerIcon( $thisIconpicker.icon, value) );
+                $thisIconpicker.search( inputVal ).map(function(value){
+                    picker.find('.iconpicker-list')
+                         .append( HTMLTag.iconPickerIcon( value) );
                 });
-            });*/
+            });
             //----------------------------------------
-            /*Iconpicker Bind Event (click) function */
+            /*Iconpicker selecter to open icon list */
             //----------------------------------------
             $(this).prev('.iconpicker').on('click', '.iconpicker-selecter', function (e) {
                 e.stopPropagation();
-                var picker = $(this).parents('.iconpicker');
-                console.log(picker);
+                var picker = $thisIconpicker.element.prev('.iconpicker');
 
-                picker.find('.iconpicker-list').toggleClass('active');
+                picker.find('.iconpicker-content').toggleClass('active');
+            });
+            //---------------------------------------------
+            /*Iconpicker search icon to open search input*/
+            //---------------------------------------------
+            $(this).prev('.iconpicker').on('click', '.iconpicker-search-click', function (e) {
+                e.stopPropagation();
+                var picker = $thisIconpicker.element.prev('.iconpicker');
+
+                picker.find('.iconpicker-content').toggleClass('searching');
             });
             //----------------------------------------
-            /*Iconpicker Bind Event (click) function*/
+            /*Iconpicker list icon to add input val */
             //----------------------------------------
             $(this).prev('.iconpicker').on('click','.iconpicker-list-icon',function(e){
                 e.stopPropagation();
-                var picker = $(this).parents('.icon-picker');
-                var icon = $(this).data();
 
-                //
+                var picker = $thisIconpicker.element.prev('.iconpicker');
+                picker.find('.iconpicker-selected-icon').empty();
+                picker.find('.iconpicker-selected-icon').append( HTMLTag.icon( $(this).data('iconname') ) );
+
+                $output = $thisIconpicker.getIconValue( $(this).data('iconname') );
+                $thisIconpicker.element.val( $output );
             });
+        });
+        //-------------------------------------------
+        /*Cancel Iconpicker select list status(css)*/
+        //-------------------------------------------
+        $(window).on('click',function(){
+            $('.iconpicker-content').removeClass('active');
         });
     };
 })(jQuery);
