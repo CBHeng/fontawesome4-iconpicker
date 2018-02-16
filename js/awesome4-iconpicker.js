@@ -54,31 +54,12 @@
     // ==============================
     // Picker Class 
     // ==============================
-    var Iconpicker = function (element){
+    var Iconpicker = function (element,config){
         this.element = element;
-        this.outputType = 'html';
-
-        var $this = this.element    ;
-        
-        //1.add HTMLtag
-        $this.before( HTMLTag.iconPicker() );
-
-        //2.add icons button
-        AwesomeIcon.icons.map(function(value,index){
-            $this.prev(".iconpicker").find(".iconpicker-list").append( HTMLTag.iconPickerIcon( value ) );
-        });
-
-        //3.Selected
-        //if( $this.val() !== null){
-        //    //3.1 remove iconClassFix
-        //    var selectVal = $this.val().replace( new RegExp('^'+$icon.iconClassFix) , '');
-        //    //3.2 add icon and input word
-        //    $this.next(".icon-picker").find('.icon-picker-selected').append( HTMLTag.icon( $icon, selectVal ) );
-        //    $this.next(".icon-picker").find('.icon-picker-search-input').val( selectVal );
-        //}
+        this.outputType = config.outputType || 'icon-name';
     };
     // ==============================
-    // Picker Static Fucntion
+    // Picker class Fucntion
     // ==============================
     Iconpicker.prototype.search = function(searchValue){
         return AwesomeIcon.icons.filter(function(value){
@@ -89,76 +70,108 @@
         });
     };
 
-    Iconpicker.prototype.select = function (searchValue) {
-        return this.element
-    };
-    Iconpicker.prototype.getIconValue = function(value) {
-        if(this.outputType !== 'html'){
-            return value;
+    Iconpicker.prototype.load = function() {
+        var element = this.element;
+        //0.
+        if(element.prev(".iconpicker").length > 0){
+            return;
         }
 
-        return HTMLTag.icon(value);
+        //1.add HTMLtag
+        element.before( HTMLTag.iconPicker() );
+        
+        //2.add icons button
+        AwesomeIcon.icons.map(function(value,index){
+            element.prev(".iconpicker").find(".iconpicker-list").append( HTMLTag.iconPickerIcon( value ) );
+        });
+
+        this.self = element.prev('.iconpicker');
+        element.addClass('is-icon-pciker');
+
+        //3.Selected
+        if( element.data('iconname') === null || element.data('iconname') === undefined){
+            return this;
+        }
+        //3.1 remove iconClassFix
+        var selectVal = element.data('iconname');
+        //3.2 add icon and input word
+        element.prev(".iconpicker").find('.iconpicker-selected-icon').append( HTMLTag.icon( selectVal ) );
+        element.val(this.getIconValue( selectVal ));
+
+        return this;
+    }
+
+    Iconpicker.prototype.getIconValue = function(value) {
+        if(this.outputType === 'icon-name'){
+            return value;
+        }
+        if( this.outputType === 'html' ){
+            return HTMLTag.icon(value);
+        }
+
     };
     // ==============================
     // Main iconpicker
     // ==============================
     $.fn.iconpicker = function () {
         
-        this.each(function(){
+        this.each(function(config){
             //----------------------------------------
-            /*Iconpicker CLASS                      */
+            /*Iconpicker Class                      */
             //----------------------------------------
             if( $(this).hasClass('is-iconpciker') ){
                 return;
             }
-            var $thisIconpicker = new Iconpicker($(this));
-
-            $(this).addClass('is-icon-pciker');
+            var $iconpciker = new Iconpicker($(this),config).load();
+            var picker = $iconpciker.self;
+            
             //----------------------------------------
-            /*Iconpicker search keyponel Icons  */
+            /*Iconpicker search keyponel Icons      */
             //----------------------------------------
-            $(this).prev('.iconpicker').on('keyup','.iconpicker-search-input',function(e){
+            $iconpciker.self.on('keyup','.iconpicker-search-input',function(e){
                 e.stopPropagation();
-                var picker = $thisIconpicker.element.prev('.iconpicker');
                 var inputVal = $(this).val();
 
                 picker.find('.iconpicker-list').empty();
 
-                $thisIconpicker.search( inputVal ).map(function(value){
+                $iconpciker.search( inputVal ).map(function(value){
                     picker.find('.iconpicker-list')
                          .append( HTMLTag.iconPickerIcon( value) );
                 });
             });
             //----------------------------------------
+            /*Iconpicker search keyponel Icons      */
+            //----------------------------------------
+            $iconpciker.self.on('click','.iconpicker-search-input',function(e){
+                e.stopPropagation();
+            });
+            //----------------------------------------
             /*Iconpicker selecter to open icon list */
             //----------------------------------------
-            $(this).prev('.iconpicker').on('click', '.iconpicker-selecter', function (e) {
+            $iconpciker.self.on('click', '.iconpicker-selecter', function (e) {
                 e.stopPropagation();
-                var picker = $thisIconpicker.element.prev('.iconpicker');
 
                 picker.find('.iconpicker-content').toggleClass('active');
             });
             //---------------------------------------------
             /*Iconpicker search icon to open search input*/
             //---------------------------------------------
-            $(this).prev('.iconpicker').on('click', '.iconpicker-search-click', function (e) {
+            $iconpciker.self.on('click', '.iconpicker-search-click', function (e) {
                 e.stopPropagation();
-                var picker = $thisIconpicker.element.prev('.iconpicker');
 
                 picker.find('.iconpicker-content').toggleClass('searching');
             });
             //----------------------------------------
             /*Iconpicker list icon to add input val */
             //----------------------------------------
-            $(this).prev('.iconpicker').on('click','.iconpicker-list-icon',function(e){
+            $iconpciker.self.on('click','.iconpicker-list-icon',function(e){
                 e.stopPropagation();
 
-                var picker = $thisIconpicker.element.prev('.iconpicker');
                 picker.find('.iconpicker-selected-icon').empty();
                 picker.find('.iconpicker-selected-icon').append( HTMLTag.icon( $(this).data('iconname') ) );
 
-                $output = $thisIconpicker.getIconValue( $(this).data('iconname') );
-                $thisIconpicker.element.val( $output );
+                $output = $iconpciker.getIconValue( $(this).data('iconname') );
+                $iconpciker.element.val( $output );
             });
         });
         //-------------------------------------------
@@ -166,6 +179,7 @@
         //-------------------------------------------
         $(window).on('click',function(){
             $('.iconpicker-content').removeClass('active');
+            $('.iconpicker-content').removeClass('searching');
         });
     };
 })(jQuery);
