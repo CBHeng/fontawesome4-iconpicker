@@ -1,6 +1,6 @@
 Awesome4-iconpicker
 =============
-一個簡單的(Font Awesome 4 Icon)選擇器擴充包\<br>
+一個簡單的(Font Awesome 4 Icon)選擇器擴充包<br>
 A sample iconpicker packeages for Font Awesome 4 Icon.
 ![Alt text](iconpicker.png)
 # Use before
