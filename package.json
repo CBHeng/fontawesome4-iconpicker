@@ -1,10 +1,23 @@
 {
-  "dependencies": {
-    "autoprefixer": "^8.0.0",
-    "postcss-modules": "^1.1.0"
+  "name": "awesome4-iconpicker",
+  "version": "1.0.0",
+  "description": "A sample iconpicker packeages for Font Awesome 4 Icon.",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "devDependencies": {
-    "cssnano": "^3.10.0",
-    "node-sass": "^4.7.2"
-  }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CBHeng/Awesome4-iconpicker.git"
+  },
+  "keywords": [
+    "Awesome4-iconpicker"
+  ],
+  "author": "CBHeng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CBHeng/Awesome4-iconpicker/issues"
+  },
+  "homepage": "https://github.com/CBHeng/Awesome4-iconpicker#readme"
 }
