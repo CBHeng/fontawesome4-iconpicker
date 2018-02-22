@@ -113,9 +113,8 @@
     // ==============================
     // Main iconpicker
     // ==============================
-    $.fn.iconpicker = function () {
-        
-        this.each(function(config){
+    $.fn.iconpicker = function (config) {
+        this.each(function(){
             //----------------------------------------
             /*Iconpicker Class                      */
             //----------------------------------------
