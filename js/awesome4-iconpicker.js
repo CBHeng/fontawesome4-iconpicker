@@ -56,7 +56,7 @@
     // ==============================
     var Iconpicker = function (element,config){
         this.element = element;
-        this.outputType = config.outputType || 'icon-name';
+        this.outputType = config.outputType;
     };
     // ==============================
     // Picker class Fucntion
@@ -114,14 +114,14 @@
     // Main iconpicker
     // ==============================
     $.fn.iconpicker = function (config) {
-        this.each(function(){
+        this.each(function (){
             //----------------------------------------
             /*Iconpicker Class                      */
             //----------------------------------------
             if( $(this).hasClass('is-iconpciker') ){
                 return;
             }
-            var $iconpciker = new Iconpicker($(this),config).load();
+            var $iconpciker = new Iconpicker($(this), ((typeof config === 'object') ? config : { "outputType": "icon-name" }) ).load();
             var picker = $iconpciker.self;
             
             //----------------------------------------
