@@ -59,8 +59,9 @@
         this.outputType = config.outputType;
     };
     // ==============================
-    // Picker class Fucntion
+    // Picker Class Method Fucntion
     // ==============================
+    //Iconpicker 輸入尋找
     Iconpicker.prototype.search = function(searchValue){
         return AwesomeIcon.icons.filter(function(value){
             if( value.indexOf(searchValue) == -1){
@@ -69,112 +70,140 @@
             return true;
         });
     };
+    //Iconpicker input 初始化
+    Iconpicker.prototype.init = function() {
 
-    Iconpicker.prototype.load = function() {
-        var element = this.element;
-        //0.
-        if(element.prev(".iconpicker").length > 0){
-            return;
-        }
+        let alreadyHasIconpickerClass = this.element.prev(".iconpicker").length > 0
 
-        //1.add HTMLtag
-        element.before( HTMLTag.iconPicker() );
+        //0. 確保上一層沒有iconpicker class, 才會繼續渲染
+        if (alreadyHasIconpickerClass) return;
+
+        //1.add iconpicker HTMLtag
+        //渲染 iconpicker 選單Html架構
+        this.element.before( HTMLTag.iconPicker() );
         
-        //2.add icons button
+        let iconpicker = this.element.prev(".iconpicker");
+        let iconpickerSelectedIcon = iconpicker.find(".iconpicker-selected-icon");
+        let iconpickerContentList = iconpicker.find(".iconpicker-list");
+
+        //2. add icons button 
+        //渲染 iconpicker 裡面的全部icon
         AwesomeIcon.icons.map(function(value,index){
-            element.prev(".iconpicker").find(".iconpicker-list").append( HTMLTag.iconPickerIcon( value ) );
+            iconpickerContentList.append( HTMLTag.iconPickerIcon( value ) );
         });
 
-        this.self = element.prev('.iconpicker');
-        element.addClass('is-icon-pciker');
+        //3. Selected
+        //如果有初選值, 就預渲染
+        if (this.element.data('iconname') !== null || element.data('iconname') !== undefined ) {
+            //3.2 add icon and input word
+            var selectVal = this.element.data('iconname');
 
-        //3.Selected
-        if( element.data('iconname') === null || element.data('iconname') === undefined){
-            return this;
+            iconpickerSelectedIcon.append(HTMLTag.icon(selectVal));
+
+            this.element.val( this.getIconOuputValue(selectVal) );
         }
-        //3.1 remove iconClassFix
-        var selectVal = element.data('iconname');
-        //3.2 add icon and input word
-        element.prev(".iconpicker").find('.iconpicker-selected-icon').append( HTMLTag.icon( selectVal ) );
-        element.val(this.getIconValue( selectVal ));
+
+        //4. finish
+        //渲染完畢, 幫自己加一些屬性與特徵
+        this.self = this.element.prev(".iconpicker");
+        this.element.addClass('is-icon-pciker');
 
         return this;
     }
 
-    Iconpicker.prototype.getIconValue = function(value) {
+    // Iconpicker 產出值 依照產出設定產出不同的格式
+    Iconpicker.prototype.getIconOuputValue = function(value) {
         if(this.outputType === 'icon-name'){
             return value;
         }
         if( this.outputType === 'html' ){
             return HTMLTag.icon(value);
         }
-
     };
     // ==============================
     // Main iconpicker
     // ==============================
     $.fn.iconpicker = function (config) {
+        // why: this.each
+        // 一個$('.test')的結果, 可能有多組, 但相同設定
         this.each(function (){
+            
+            if ($(this).hasClass('is-iconpciker')) return;
+
             //----------------------------------------
-            /*Iconpicker Class                      */
+            /* Iconpicker Class  init               */
             //----------------------------------------
-            if( $(this).hasClass('is-iconpciker') ){
-                return;
-            }
-            var $iconpciker = new Iconpicker($(this), ((typeof config === 'object') ? config : { "outputType": "icon-name" }) ).load();
-            var picker = $iconpciker.self;
+            
+            var $config = (typeof config === 'object') ? config : { "outputType": "icon-name" }
+
+            var $iconpciker = new Iconpicker( $(this), $config ).init();
+            
+            var $this = $iconpciker.self;
             
             //----------------------------------------
-            /*Iconpicker search keyponel Icons      */
+            // Iconpicker search icon name           
+            // 當你鍵盤點完那一瞬間, iconpicker 幫搜尋有符合的結果, 並更新
             //----------------------------------------
             $iconpciker.self.on('keyup','.iconpicker-search-input',function(e){
                 e.stopPropagation();
-                var inputVal = $(this).val();
+                
+                $this.find('.iconpicker-list').empty();
 
-                picker.find('.iconpicker-list').empty();
+                var iconName = $(this).val();
 
-                $iconpciker.search( inputVal ).map(function(value){
-                    picker.find('.iconpicker-list')
-                         .append( HTMLTag.iconPickerIcon( value) );
+                var searchResult = $iconpciker.search(iconName)
+
+                searchResult.map(function(value){
+                    let IconItemHTML = HTMLTag.iconPickerIcon(value)
+
+                    $this.find('.iconpicker-list').append(IconItemHTML);
                 });
             });
             //----------------------------------------
-            /*Iconpicker search keyponel Icons      */
+            // Iconpicker search input click         
+            // 避免冒泡, 為了實現點擊(不是)iconpicker的操作 iconpicker會收合起來
+            // 如果這 click 拿掉 iconpicker會合起來
             //----------------------------------------
             $iconpciker.self.on('click','.iconpicker-search-input',function(e){
                 e.stopPropagation();
             });
             //----------------------------------------
-            /*Iconpicker selecter to open icon list */
+            // Iconpicker selecter can open list and close list 
+            // 下拉選單的開合動作
             //----------------------------------------
             $iconpciker.self.on('click', '.iconpicker-selecter', function (e) {
                 e.stopPropagation();
 
-                picker.find('.iconpicker-content').toggleClass('active');
+                $this.find('.iconpicker-content').toggleClass('active');
             });
             //---------------------------------------------
-            /*Iconpicker search icon to open search input*/
+            // Iconpicker search dom can open search input and close search input
+            // 文字搜尋的開合動作
             //---------------------------------------------
             $iconpciker.self.on('click', '.iconpicker-search-click', function (e) {
                 e.stopPropagation();
 
-                picker.find('.iconpicker-content').toggleClass('searching');
+                $this.find('.iconpicker-content').toggleClass('searching');
             });
             //----------------------------------------
-            /*Iconpicker list icon to add input val */
+            // Iconpicker Selected Icon will reset when icon of list is selected.
+            // 你選取 icon 時候, 重染select圖標 和 更新input value
             //----------------------------------------
             $iconpciker.self.on('click','.iconpicker-list-icon',function(e){
                 e.stopPropagation();
 
-                picker.find('.iconpicker-selected-icon').empty();
-                picker.find('.iconpicker-selected-icon').append( HTMLTag.icon( $(this).data('iconname') ) );
+                let iconname = $(this).data('iconname')
+                let iconHTML = HTMLTag.icon(iconname)
+                let outputValue = $iconpciker.getIconOuputValue(iconname);
 
-                $output = $iconpciker.getIconValue( $(this).data('iconname') );
-                $iconpciker.element.val( $output );
+                $this.find('.iconpicker-selected-icon').empty();
+                $this.find('.iconpicker-selected-icon').append(iconHTML);
+
+                $iconpciker.element.val(outputValue);
             });
         });
         //-------------------------------------------
-        /*Cancel Iconpicker select list status(css)*/
+        /* Cancel Iconpicker select list status(css) */
         //-------------------------------------------
         $(window).on('click',function(){
             $('.iconpicker-content').removeClass('active');
